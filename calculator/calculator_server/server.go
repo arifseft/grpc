@@ -11,6 +11,7 @@ import (
 	"github.com/arifseft/grpc/calculator/calculatorpb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
 
@@ -26,15 +27,6 @@ func (*server) Sum(ctx context.Context, req *calculatorpb.SumRequest) (*calculat
 	}
 	return res, nil
 }
-
-// k = 2
-// N = 210
-// while N > 1:
-//     if N % k == 0:   // if k evenly divides into N
-//         print k      // this is a factor
-//         N = N / k    // divide N by k so that we have the rest of the number left.
-//     else:
-//         k = k + 1
 
 func (*server) PrimeNumberDecomposition(req *calculatorpb.PrimeNumberDecompositionRequest, stream calculatorpb.CalculatorService_PrimeNumberDecompositionServer) error {
 	fmt.Printf("PrimeNumberDecomposition function was invoked with %v\n", req)
@@ -130,6 +122,8 @@ func main() {
 
 	s := grpc.NewServer()
 	calculatorpb.RegisterCalculatorServiceServer(s, &server{})
+
+	reflection.Register(s)
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve %v", err)
